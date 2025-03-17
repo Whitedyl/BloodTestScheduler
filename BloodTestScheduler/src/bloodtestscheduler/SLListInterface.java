@@ -11,7 +11,7 @@ package bloodtestscheduler;
 public interface SLListInterface {
     void add(Patients p);
     void remove(Patients p);
-    void display(Patients p);
+    void display();
     int size();
     
     
