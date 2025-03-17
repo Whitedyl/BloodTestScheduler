@@ -9,5 +9,10 @@ package bloodtestscheduler;
  * @author Lenovo
  */
 public interface SLListInterface {
+    void add(Patients p);
+    void remove(Patients p);
+    void display(Patients p);
+    int size();
+    
     
 }
