@@ -1,6 +1,6 @@
 package bloodtestscheduler;
 
-import java.util.Objects;
+import java.io.Serializable;
 
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
@@ -11,7 +11,7 @@ import java.util.Objects;
  *
  * @author Lenovo
  */
-public class Patients {
+public class Patients implements Serializable {
     String name, priority, gpDetails;
     boolean fromHospital;
     int age;
@@ -70,12 +70,12 @@ public class Patients {
     }
     @Override
 public boolean equals(Object obj) {
-    if (this == obj) return true; // If same reference, they are equal
-    if (obj == null || getClass() != obj.getClass()) return false; // If not same class, not equal
+    if (this == obj) return true; //if same reference, they are equal
+    if (obj == null || getClass() != obj.getClass()) return false; //if not same class, not equal
     
     Patients patient = (Patients) obj;
     
-    // Compare all fields that define equality (ignoring gpDetails if it's not needed)
+    //compare all fields that define equality (ignoring gpDetails if it's not needed)
     return name.equals(patient.name) &&
            priority.equals(patient.priority) && 
            fromHospital == patient.fromHospital &&

@@ -17,18 +17,25 @@ public class PriorityQueue implements PriorityQueueInterface {
     public void enqueue(Patients p){
         pQueue.add(p);
         
+        //creating priority for the queue
         pQueue.sort(new Comparator<Patients>() {
+            
+            //comparing the number value from getprioNum method
         public int compare(Patients p1, Patients p2){
         int prioCompare = getPrioNum(p2.getPriority()) - getPrioNum(p1.getPriority());
         if(prioCompare !=0) {
             return prioCompare;
         }
+        
+        //comparing if a patient is from the hospital
         if(p1.isFromHospital() && !p2.isFromHospital()) {
             return -1;
         }
         if(!p1.isFromHospital() && p2.isFromHospital()){
             return 1;
         }
+        
+        //comparing patients age
         return p2.getAge() - p1.getAge();
         }
     });
@@ -55,6 +62,7 @@ public class PriorityQueue implements PriorityQueueInterface {
         return pQueue.isEmpty();
     }
     
+    //method to convert priority to a number to compare
     private int getPrioNum(String priority){
         if (priority.equalsIgnoreCase("high")){
             return 3;

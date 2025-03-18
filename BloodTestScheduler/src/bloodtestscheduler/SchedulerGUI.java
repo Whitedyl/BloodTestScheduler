@@ -4,6 +4,15 @@
  */
 package bloodtestscheduler;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.util.ArrayList;
+import javax.swing.JOptionPane;
+
 /**
  *
  * @author Lenovo
@@ -13,8 +22,112 @@ public class SchedulerGUI extends javax.swing.JFrame {
     /**
      * Creates new form SchedulerGUI
      */
+    private SLList patientList;
+    private PriorityQueue pq;
+    private Stack stack;
+
     public SchedulerGUI() {
         initComponents();
+
+        patientList = new SLList();
+        pq = new PriorityQueue();
+        stack = new Stack();
+        loadFile(); //load file
+        displayNextPatient(); //display PQ
+        displayStack();
+    }
+
+    //method to load file when app is opened
+    private void loadFile() {
+        File f;
+        FileInputStream fStream;
+        ObjectInputStream oStream;
+
+        try {
+            f = new File("patients.dat");
+            if (!f.exists()) {
+                System.out.println("No saved patients file found.");
+                return;
+            }
+
+            fStream = new FileInputStream(f);
+            oStream = new ObjectInputStream(fStream);
+
+            patientList = (SLList) oStream.readObject();
+
+            //enqueue all loaded patients
+            ArrayList<Patients> patients = patientList.getAllPatients();
+            for (Patients p : patients) {
+                pq.enqueue(p);
+                System.out.println("Loaded patient: " + p.getName());
+            }
+
+            oStream.close();
+            fStream.close();
+
+            displayNextPatient();
+
+        } catch (IOException | ClassNotFoundException e) {
+            System.out.println("Error loading file: " + e);
+        }
+    }
+
+    private void savePatientToFile() {
+        //adding to file
+        File f;
+        FileOutputStream fStream;
+        ObjectOutputStream oStream;
+        try {
+            f = new File("patients.dat");
+            fStream = new FileOutputStream(f);
+            oStream = new ObjectOutputStream(fStream);
+
+            oStream.writeObject(patientList);
+
+            oStream.close();
+        } catch (IOException e) {
+            System.out.println("Error saving to file" + e);
+        }
+    }
+
+    //method to display next patient in the PQ when the app is opened
+    private void displayNextPatient() {
+        if (!pq.isEmpty()) {
+            Patients nextPatient = pq.peek();
+            taDisplayPQ.setText("Name: " + nextPatient.getName() + "\n"
+                    + "Age: " + nextPatient.getAge() + "\n"
+                    + "Priority: " + nextPatient.getPriority() + "\n"
+                    + "From Hospital: " + nextPatient.isFromHospital() + "\n"
+                    + "GP Details: " + nextPatient.getGpDetails());
+        } else {
+            taDisplayPQ.setText("No Patient Next"); // Explicitly handle empty case
+        }
+    }
+
+    private void displayStack() {
+        //using string builder to display the stack items 
+        StringBuilder sb = new StringBuilder();
+        Stack tempStack = new Stack();
+
+        //process all stack elements
+        while (!stack.isEmpty()) {
+            Patients p = stack.pop();
+            tempStack.push(p); //temporarily store in reverse order
+
+            sb.append("Name: ").append(p.getName()).append("\n")
+                    .append("Age: ").append(p.getAge()).append("\n")
+                    .append("Priority: ").append(p.getPriority()).append("\n")
+                    .append("From Hospital: ").append(p.isFromHospital()).append("\n")
+                    .append("GP Details: ").append(p.getGpDetails()).append("\n\n")
+                    .append("============").append("\n");
+        }
+
+        //restore original stack order
+        while (!tempStack.isEmpty()) {
+            stack.push(tempStack.pop());
+        }
+
+        taStackDisplay.setText(sb.toString());
     }
 
     /**
@@ -26,27 +139,354 @@ public class SchedulerGUI extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        jTabbedPane1 = new javax.swing.JTabbedPane();
+        jPanel1 = new javax.swing.JPanel();
+        lblHeader = new javax.swing.JLabel();
+        jLabel1 = new javax.swing.JLabel();
+        jLabel2 = new javax.swing.JLabel();
+        jLabel3 = new javax.swing.JLabel();
+        jLabel4 = new javax.swing.JLabel();
+        txtName = new javax.swing.JTextField();
+        txtAge = new javax.swing.JTextField();
+        cbFromHospital = new javax.swing.JCheckBox();
+        cmbPriority = new javax.swing.JComboBox<>();
+        btnaddPatient = new javax.swing.JButton();
+        jLabel7 = new javax.swing.JLabel();
+        txtGPDetails = new javax.swing.JTextField();
+        jPanel2 = new javax.swing.JPanel();
+        jLabel6 = new javax.swing.JLabel();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        taDisplayPQ = new javax.swing.JTextArea();
+        btnMarkAttended = new javax.swing.JButton();
+        btnMarkNoShow = new javax.swing.JButton();
+        jPanel3 = new javax.swing.JPanel();
+        jLabel5 = new javax.swing.JLabel();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        taStackDisplay = new javax.swing.JTextArea();
+        btnClearStack = new javax.swing.JButton();
+
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setPreferredSize(new java.awt.Dimension(600, 400));
+
+        lblHeader.setText("Register Patient");
+
+        jLabel1.setText("Name");
+
+        jLabel2.setText("Age");
+
+        jLabel3.setText("From Hospital");
+
+        jLabel4.setText("Priority");
+
+        txtName.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txtNameActionPerformed(evt);
+            }
+        });
+
+        cbFromHospital.setText("(Tick if yes)");
+
+        cmbPriority.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Low", "Medium", "High" }));
+
+        btnaddPatient.setText("Add Patient");
+        btnaddPatient.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnaddPatientActionPerformed(evt);
+            }
+        });
+
+        jLabel7.setText("GP Details");
+
+        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
+        jPanel1.setLayout(jPanel1Layout);
+        jPanel1Layout.setHorizontalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGap(207, 207, 207)
+                        .addComponent(btnaddPatient, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGap(225, 225, 225)
+                        .addComponent(lblHeader))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGap(122, 122, 122)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel1)
+                            .addComponent(jLabel2)
+                            .addComponent(jLabel3)
+                            .addComponent(jLabel4)
+                            .addComponent(jLabel7))
+                        .addGap(93, 93, 93)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(txtName)
+                            .addComponent(txtAge)
+                            .addComponent(cbFromHospital, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(cmbPriority, 0, 99, Short.MAX_VALUE)
+                            .addComponent(txtGPDetails))))
+                .addContainerGap(199, Short.MAX_VALUE))
+        );
+        jPanel1Layout.setVerticalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(lblHeader)
+                .addGap(18, 18, 18)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel1)
+                    .addComponent(txtName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel2)
+                    .addComponent(txtAge, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel3)
+                    .addComponent(cbFromHospital))
+                .addGap(18, 18, 18)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel4)
+                    .addComponent(cmbPriority, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel7)
+                    .addComponent(txtGPDetails, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 64, Short.MAX_VALUE)
+                .addComponent(btnaddPatient, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(17, 17, 17))
+        );
+
+        jTabbedPane1.addTab("Register", jPanel1);
+
+        jLabel6.setText("Next Patient");
+
+        taDisplayPQ.setColumns(20);
+        taDisplayPQ.setRows(5);
+        jScrollPane2.setViewportView(taDisplayPQ);
+
+        btnMarkAttended.setText("Mark as Attended");
+        btnMarkAttended.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnMarkAttendedActionPerformed(evt);
+            }
+        });
+
+        btnMarkNoShow.setText("Mark as No-Show");
+        btnMarkNoShow.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnMarkNoShowActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
+        jPanel2.setLayout(jPanel2Layout);
+        jPanel2Layout.setHorizontalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addGap(163, 163, 163)
+                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addGap(108, 108, 108)
+                        .addComponent(btnMarkAttended)
+                        .addGap(93, 93, 93)
+                        .addComponent(btnMarkNoShow))
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addGap(237, 237, 237)
+                        .addComponent(jLabel6)))
+                .addContainerGap(130, Short.MAX_VALUE))
+        );
+        jPanel2Layout.setVerticalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addGap(36, 36, 36)
+                .addComponent(jLabel6)
+                .addGap(42, 42, 42)
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(46, 46, 46)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(btnMarkAttended)
+                    .addComponent(btnMarkNoShow))
+                .addContainerGap(96, Short.MAX_VALUE))
+        );
+
+        jTabbedPane1.addTab("Next Patient", jPanel2);
+
+        jLabel5.setText("List of Patient No Shows");
+
+        taStackDisplay.setColumns(20);
+        taStackDisplay.setRows(5);
+        jScrollPane1.setViewportView(taStackDisplay);
+
+        btnClearStack.setText("Empty List");
+        btnClearStack.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnClearStackActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
+        jPanel3.setLayout(jPanel3Layout);
+        jPanel3Layout.setHorizontalGroup(
+            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
+                .addContainerGap(178, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(172, 172, 172))
+            .addGroup(jPanel3Layout.createSequentialGroup()
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel3Layout.createSequentialGroup()
+                        .addGap(228, 228, 228)
+                        .addComponent(jLabel5))
+                    .addGroup(jPanel3Layout.createSequentialGroup()
+                        .addGap(237, 237, 237)
+                        .addComponent(btnClearStack, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+        jPanel3Layout.setVerticalGroup(
+            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel3Layout.createSequentialGroup()
+                .addGap(24, 24, 24)
+                .addComponent(jLabel5)
+                .addGap(80, 80, 80)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(29, 29, 29)
+                .addComponent(btnClearStack, javax.swing.GroupLayout.PREFERRED_SIZE, 39, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(75, Short.MAX_VALUE))
+        );
+
+        jTabbedPane1.addTab("No-Shows", jPanel3);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 400, Short.MAX_VALUE)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jTabbedPane1)
+                .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 300, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jTabbedPane1)
+                .addContainerGap())
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    private void txtNameActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtNameActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txtNameActionPerformed
+
+    private void btnaddPatientActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnaddPatientActionPerformed
+        // TODO add your handling code here:
+        String name = txtName.getText();
+        String gpDetails = txtGPDetails.getText();
+
+        if (name.isEmpty() || gpDetails.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Enter all fields", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        int age;
+        try {
+            age = Integer.parseInt(txtAge.getText());
+            if (age <= 0) {
+                JOptionPane.showMessageDialog(this, "Enter a valid age", "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(this, "Enter a valid age", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        String priority = (String) cmbPriority.getSelectedItem();
+
+        boolean fromHospital = cbFromHospital.isSelected();
+
+        Patients newPatient = new Patients(name, priority, gpDetails, fromHospital, age);
+
+        patientList.add(newPatient); //adding patient to SLL
+        pq.enqueue(newPatient); //adding patient to priority queue
+        displayNextPatient();
+
+        //adding to file
+        savePatientToFile();
+
+        System.out.println("patient added");
+        JOptionPane.showMessageDialog(this, "Patient Added", "Success", JOptionPane.INFORMATION_MESSAGE);
+
+        //resetting the text fields
+        txtName.setText("");
+        txtAge.setText("");
+        txtGPDetails.setText("");
+        cbFromHospital.setSelected(false);
+        cmbPriority.setSelectedIndex(0);
+
+    }//GEN-LAST:event_btnaddPatientActionPerformed
+
+    private void btnMarkAttendedActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnMarkAttendedActionPerformed
+        // TODO add your handling code here:
+        if (pq.isEmpty()) {
+            taDisplayPQ.setText("No Patient to Mark");
+            return;
+        }
+
+        //dequeue patient
+        Patients attendedPatient = pq.dequeue();
+
+        //remove patient
+        patientList.remove(attendedPatient);
+
+        //updating file
+        savePatientToFile();
+
+        //displaying next patient
+        displayNextPatient();
+        JOptionPane.showMessageDialog(this, "Marked as attended", "Success", JOptionPane.INFORMATION_MESSAGE);
+    }//GEN-LAST:event_btnMarkAttendedActionPerformed
+
+    private void btnMarkNoShowActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnMarkNoShowActionPerformed
+        // TODO add your handling code here:
+        if (pq.isEmpty()) {
+            taDisplayPQ.setText("No Patient to Mark");
+            return;
+        }
+
+        //remove patient from queue amd pushing to stack
+        Patients noShowPatient = pq.dequeue();
+        stack.push(noShowPatient);
+
+        //remove patient
+        patientList.remove(noShowPatient);
+
+        //displaying next patient in pq
+        displayNextPatient();
+
+        //updating stack display
+        displayStack();
+
+        //update file
+        savePatientToFile();
+
+        JOptionPane.showMessageDialog(this, noShowPatient.getName() + " marked as no-show", "Success", JOptionPane.INFORMATION_MESSAGE);
+
+    }//GEN-LAST:event_btnMarkNoShowActionPerformed
+
+    private void btnClearStackActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnClearStackActionPerformed
+        // TODO add your handling code here:
+        Stack stack = new Stack(); //creating new stack to clear stack
+        taStackDisplay.setText("Stack is now empty");
+
+    }//GEN-LAST:event_btnClearStackActionPerformed
+
     /**
      * @param args the command line arguments
      */
     public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
+        /* set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
         /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
          * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
@@ -69,7 +509,7 @@ public class SchedulerGUI extends javax.swing.JFrame {
         }
         //</editor-fold>
 
-        /* Create and display the form */
+        /* create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
                 new SchedulerGUI().setVisible(true);
@@ -78,5 +518,30 @@ public class SchedulerGUI extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnClearStack;
+    private javax.swing.JButton btnMarkAttended;
+    private javax.swing.JButton btnMarkNoShow;
+    private javax.swing.JButton btnaddPatient;
+    private javax.swing.JCheckBox cbFromHospital;
+    private javax.swing.JComboBox<String> cmbPriority;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel6;
+    private javax.swing.JLabel jLabel7;
+    private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel jPanel2;
+    private javax.swing.JPanel jPanel3;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JTabbedPane jTabbedPane1;
+    private javax.swing.JLabel lblHeader;
+    private javax.swing.JTextArea taDisplayPQ;
+    private javax.swing.JTextArea taStackDisplay;
+    private javax.swing.JTextField txtAge;
+    private javax.swing.JTextField txtGPDetails;
+    private javax.swing.JTextField txtName;
     // End of variables declaration//GEN-END:variables
 }

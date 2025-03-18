@@ -19,6 +19,7 @@ public class Stack implements StackInterface {
         stack.add(p);
     }
 
+    //to remove the first item in stack
     @Override
     public Patients pop() {
         if(stack.isEmpty()){
@@ -28,6 +29,7 @@ public class Stack implements StackInterface {
         return stack.remove(stack.size() - 1);
     }
 
+    //to view the first item in stack
     @Override
     public Patients peek() {
         if(stack.isEmpty()) {

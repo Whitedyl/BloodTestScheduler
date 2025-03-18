@@ -4,11 +4,13 @@
  */
 package bloodtestscheduler;
 
+import java.io.Serializable;
+
 /**
  *
  * @author Lenovo
  */
-public class Node {
+public class Node implements Serializable  {
     Patients data;
     Node next;
 

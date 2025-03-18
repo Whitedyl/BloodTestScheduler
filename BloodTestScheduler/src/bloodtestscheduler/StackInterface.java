@@ -10,14 +10,14 @@ package bloodtestscheduler;
  */
 public interface StackInterface {
 
-    void push(Patients p);  // Adds a patient to the stack (no-show patients)
+    void push(Patients p);
 
-    Patients pop();         // Removes the most recent patient (from top of stack)
+    Patients pop();       
 
-    Patients peek();        // Views the most recent patient without removing
+    Patients peek();      
 
-    boolean isEmpty();      // Checks if the stack is empty
+    boolean isEmpty();      
 
-    int size();             // Returns the size of the stack
+    int size();            
 
 }
