@@ -14,7 +14,7 @@ public class Node {
 
     public Node(Patients data) {
         this.data = data;
-        this.next = next;
+        this.next = null;
     }
     
     

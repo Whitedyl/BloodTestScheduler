@@ -9,5 +9,15 @@ package bloodtestscheduler;
  * @author Lenovo
  */
 public interface PriorityQueueInterface {
-    
+
+    void enqueue(Patients p);
+
+    Patients dequeue();
+
+    Patients peek();
+
+    int size();
+
+    boolean isEmpty();
+
 }

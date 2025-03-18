@@ -35,21 +35,23 @@ public class SLList implements SLListInterface {
     public void remove(Patients p) {
         if (head == null) {
             return;
-        } else if (head.data.equals(p)) {
+        } 
+       
+        if (head.data.equals(p)) {
             head = head.next;
             count--; //decrease count 
-            return;
+            return; 
         }
 
         Node temp = head; //to start the loop at head
         //loop to find node to delete
-        while (temp.next != null && !temp.next.data.equals(p)) {
-            temp = temp.next;
+        while (temp.next != null) {
+        if (temp.next.data.equals(p)) { // If the next node is the one to remove
+            temp.next = temp.next.next; // Skip over the node
+            count--; // Decrease count
+            return; // Exit once the node is removed
         }
-        //if found remove by skipping the node
-        if (temp.next != null) {
-            temp.next = temp.next.next;
-            count--; //decreate count
+        temp = temp.next;
         }
     }
     @Override
@@ -72,4 +74,6 @@ public class SLList implements SLListInterface {
     public int size(){
         return count;
     }
+    
+    
 }

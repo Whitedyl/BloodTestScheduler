@@ -1,5 +1,7 @@
 package bloodtestscheduler;
 
+import java.util.Objects;
+
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
@@ -14,9 +16,9 @@ public class Patients {
     boolean fromHospital;
     int age;
 
-    public Patients(String name, String priotity, String gpDetails, boolean fromHospital, int age) {
+    public Patients(String name, String priority, String gpDetails, boolean fromHospital, int age) {
         this.name = name;
-        this.priority = priotity;
+        this.priority = priority;
         this.gpDetails = gpDetails;
         this.fromHospital = fromHospital;
         this.age = age;
@@ -64,8 +66,25 @@ public class Patients {
 
     @Override
     public String toString() {
-        return "Patients{" + "name=" + name + ", priotity=" + priority + ", gpDetails=" + gpDetails + ", fromHospital=" + fromHospital + ", age=" + age + '}';
+        return "Patients{" + "name=" + name + ", priority=" + priority + ", gpDetails=" + gpDetails + ", fromHospital=" + fromHospital + ", age=" + age + '}';
     }
+    @Override
+public boolean equals(Object obj) {
+    if (this == obj) return true; // If same reference, they are equal
+    if (obj == null || getClass() != obj.getClass()) return false; // If not same class, not equal
     
+    Patients patient = (Patients) obj;
+    
+    // Compare all fields that define equality (ignoring gpDetails if it's not needed)
+    return name.equals(patient.name) &&
+           priority.equals(patient.priority) && 
+           fromHospital == patient.fromHospital &&
+           age == patient.age;
+}
+
+//@Override
+//public int hashCode() {
+//    return Objects.hash(name, priority, fromHospital, age); // Ensure consistent hashing
+//}
     
 }
